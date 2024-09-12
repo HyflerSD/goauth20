@@ -7,7 +7,7 @@ CREATE TABLE oauth_clients (
 	PRIMARY KEY (`id`)
 );
 
-INSERT INTO oauth_client
+INSERT INTO oauth_clients
     (id, secret, isActive, scopes)
 VALUES
     ('1', 'secret1', false, 'scope1,scope2,scope3'),

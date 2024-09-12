@@ -20,6 +20,10 @@ type Creator interface {
 	Delete(fd *os.File) error
 }
 
+type Validator interface {
+	Validate() (bool, error)
+}
+
 type User struct {
 	email    string
 	password string
@@ -35,7 +39,7 @@ type TempAuthCodes struct {
 }
 
 type OauthClient struct {
-	clientID     int32
+	clientID     string
 	clientSecret string
 	isActive     bool
 	scopes       []string
@@ -74,9 +78,31 @@ func main() {
 	}
 
 	fmt.Println("connected!")
+	var a OauthClient = OauthClient{clientID: "1", clientSecret: "secret1"}
+	a.Validate(db)
 }
 
 /** CLIENT STUFF*/
+
+func (a *OauthClient) Validate(db *sql.DB) (bool, error) {
+	users, err := db.Query("SELECT COUNT(*) FROM oauth_clients where id = ? AND secret = ?", a.clientID, a.clientSecret)
+	if err != nil {
+		log.Fatal("Not Found")
+		return false, err
+	}
+	defer users.Close()
+
+	var count int
+
+	for users.Next() {
+		if err := users.Scan(&count); err != nil {
+			log.Fatal("Not Found")
+			return false, err
+		}
+	}
+	return true, nil
+}
+
 func (a *OauthClient) Create(fd *os.File) bool {
 	return true
 }
