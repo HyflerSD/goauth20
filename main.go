@@ -103,26 +103,28 @@ func (a *OauthClient) Validate(db *sql.DB) (bool, error) {
 	return true, nil
 }
 
-func (a *OauthClient) Create(fd *os.File) bool {
-	return true
+func (a *OauthClient) Create(fd *os.File) (bool, error) {
+	//Check id client exists before creating
+	return true, nil
 }
 
-func (a *OauthClient) Authorize(fd *os.File) bool {
-
-	return true
+func (a *OauthClient) Authorize(fd *os.File) (bool, error) {
+	//just check if this account is there and valid
+	return true, nil
 }
 
 func (a *OauthClient) Revoke(fd *os.File) bool {
 	return true
 }
 
-func (a *OauthClient) Delete(fd *os.File) bool {
-	return true
+func (a *OauthClient) Delete(fd *os.File) (bool, error) {
+	return true, nil
 }
 
 /** USER STUFF*/
 
 func (a *OauthUser) Authorize(fd *os.File) bool {
+	//Simiate the sign in popup flow
 	return true
 }
 
