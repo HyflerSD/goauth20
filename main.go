@@ -1,12 +1,14 @@
 package main
 
 import (
-	//"errors"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
+	"io"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -58,6 +60,16 @@ var db *sql.DB
 
 func main() {
 
+	http.HandleFunc("/hello", postGenToken)
+
+	err := http.ListenAndServe(":8080", nil)
+	if errors.Is(err, http.ErrServerClosed) {
+		fmt.Printf("server is closed bro")
+	} else if err != nil {
+		fmt.Printf("Error happened: %s\n", err)
+		os.Exit(1)
+	}
+
 	cfg := mysql.Config{
 		User:   os.Getenv("GODBUSER"),
 		Passwd: os.Getenv("GODBPASS"),
@@ -82,6 +94,15 @@ func main() {
 	a.Validate(db)
 }
 
+func postGenToken(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("Request Received\n")
+	p := r.URL.Query()
+	//Parse url and check if its valid then handle the rest
+	v := p.Get("name")
+	fmt.Printf(v)
+	io.WriteString(w, "hello world\n")
+}
+
 /** CLIENT STUFF*/
 
 func (a *OauthClient) Validate(db *sql.DB) (bool, error) {
@@ -100,6 +121,7 @@ func (a *OauthClient) Validate(db *sql.DB) (bool, error) {
 			return false, err
 		}
 	}
+	fmt.Printf("Count=%d\n", count)
 	return true, nil
 }
 
